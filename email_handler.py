@@ -11,8 +11,8 @@ import time
 # -----------------------
 # 1. Configuration
 # -----------------------
-EMAIL_ADDRESS = "digimedexxim@gmail.com"
-EMAIL_PASSWORD = "bbdt pwfs hqok wflp"
+EMAIL_ADDRESS = "youremial@email.com"
+EMAIL_PASSWORD = "App_Password"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EXCEL_FILE = "sent_emails_list.xlsx"
@@ -270,3 +270,4 @@ def run_email_schedule():
 # -----------------------
 if __name__ == "__main__":
     run_email_schedule()
+
