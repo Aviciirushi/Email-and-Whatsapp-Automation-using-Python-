@@ -11,135 +11,119 @@ import time
 # -----------------------
 # 1. Configuration
 # -----------------------
-EMAIL_ADDRESS = "youremial@email.com"
-EMAIL_PASSWORD = "App_Password"
+# 👉 Replace with your own email + app password before use
+EMAIL_ADDRESS = "your_email@gmail.com"
+EMAIL_PASSWORD = "your_app_password"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EXCEL_FILE = "sent_emails_list.xlsx"
-MAX_EMAILS_PER_DAY = 100  # Gmail safe daily send limit
+MAX_EMAILS_PER_DAY = 100  # Safe Gmail daily limit (can be adjusted)
 
 # -----------------------
-# 2. Email Templates
+# 2. Email Templates (Demo / Sample)
 # -----------------------
 def get_email_template(day):
+    """
+    Returns (subject, body) for a given scheduled day.
+    These are demo messages — replace with your own content.
+    """
     subject, body = "", ""
 
     if day == 1:
-        subject = "Your quotation from Digimed Exxim"
-        body = """Dear Sir/Mam,
+        subject = "Welcome to Our Mailing List"
+        body = """Dear User,
 
-I hope you are doing well. I just wanted to follow up on the quotation we recently shared.
+Thank you for connecting with us! This is your first update.
 
-At *Digimed Exxim*, we specialize in exporting:
-✅ Steroids & Weight Loss Products
-✅ Tapentadol & Carisoprodol
-✅ Exclusive Indian Ayurvedic & Herbal Formulations (our USP)
+We’ll be sharing:
+✅ Industry insights
+✅ Product updates
+✅ Helpful resources
 
-Why our partners choose us:
-* WHO-GMP Certified Products
-* Shelf Life of 15+ months
-* Flexible MOQs tailored to your market needs
-
-👉 Would you like me to prepare a revised proposal that best fits your requirements?
-
-Warm regards,
-Rahul Singh
-Founder, Digimed Exxim
-🌐 www.digimedexxim.com
-📧 digimedexxim@gmail.com
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
-
-    elif day == 4:
-        subject = "How distributors in USA & UK scaled with Digimed Exxim"
-        body = """Dear Sir/Mam,
-
-Just checking in again. Many of our clients in the *USA, UK, and Australia* rely on us for a consistent supply of *Weight Loss products, Steroids, and Tapentadol*, while markets like *France, Singapore, and Malaysia* prefer our *Ayurvedic & Herbal range*.
-
-📌 Example: A distributor in USA reduced delays by *30% in 3 months* after switching to our supply chain.
-
-👉 Would you like me to share a *region-specific case study* to show how we can add the same value to your business?
+Stay tuned for more!
 
 Best regards,
-Rahul Singh
-Digimed Exxim
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
+The Demo Team
+"""
+
+    elif day == 4:
+        subject = "Case Study: How Businesses Grow With Us"
+        body = """Hello,
+
+Here’s a quick case study showing how companies achieved growth 
+by adopting modern solutions.
+
+👉 Would you like a personalized walkthrough?
+
+Cheers,
+The Demo Team
+"""
 
     elif day == 10:
-        subject = "Why our herbal + pharma mix gives distributors an edge"
-        body = """Dear Sir/Mam,
+        subject = "Exclusive Benefits of Our Services"
+        body = """Hi there,
 
-What sets Digimed Exxim apart isn’t just our strong pharma portfolio (Steroids, Weight Loss, Tapentadol, Carisoprodol) — but also our *exclusive Indian Herbal & Ayurvedic line*, which has been a game-changer for distributors.
+What makes us different:
+✅ Proven reliability
+✅ High customer satisfaction
+✅ Flexible solutions
 
-Benefits for you:
-✅ Strong margins + fast-growing natural demand
-✅ WHO-GMP certified & 15+ months shelf life
-✅ Timely shipments across USA, UK, Australia, France, Singapore & more
-✅ Flexible MOQ for faster market entry
+👉 Should we prepare a custom plan for your needs?
 
-👉 Would you like me to prepare a *supply plan tailored to your market’s demand cycles*?
-
-Warm regards,
-Rahul Singh
-Digimed Exxim
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
+Regards,
+The Demo Team
+"""
 
     elif day == 20:
-        subject = "High demand for Weight Loss & Herbal products this quarter"
-        body = """Dear Sir/Mam,
+        subject = "Industry Trends You Shouldn’t Miss"
+        body = """Dear User,
 
-We’re seeing a strong surge in demand for *Weight Loss Products, Tapentadol, and Herbal formulations* in markets like *USA, France, and Australia*.
+We’re seeing strong demand for innovative solutions in multiple regions.
 
-To help distributors capture this demand, we offer:
-✅ Competitive pricing
-✅ Reliable stock & on-time shipping
-✅ Region-specific product recommendations
+To help you stay ahead, we provide:
+✅ Expert insights
+✅ Reliable updates
+✅ Actionable recommendations
 
-👉 Should I prepare a *customized product list* for your country/region?
+👉 Want a tailored report for your industry?
 
-Warm regards,
-Rahul Singh
-Digimed Exxim
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
+Best,
+The Demo Team
+"""
 
     elif day == 40:
-        subject = "Reserve your stock + 5% discount this month"
-        body = """Dear Sir/Mam,
+        subject = "Special Offer for Early Adopters"
+        body = """Hello,
 
-We’re closing this month’s export shipping schedule and wanted to check if you’d like me to reserve a slot for you.
-
-To make this more valuable, we’re offering an *exclusive 5% discount on your first confirmed order this month.*
+We’re closing this month’s schedule and wanted to check if you’d 
+like to reserve a slot.
 
 Early confirmation gives you:
-✅ Priority shipping
-✅ Assured stock allocation
-✅ Discount on first order
-✅ Best pricing for Steroids, Weight Loss, Tapentadol, Carisoprodol & Herbal
+✅ Priority access
+✅ Exclusive discounts
+✅ Dedicated support
 
-👉 Should I block a slot and apply your discount?
+👉 Should we reserve your spot?
 
-Warm regards,
-Rahul Singh
-Digimed Exxim
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
+Thanks,
+The Demo Team
+"""
 
     elif day == 90:
-        subject = "Should I keep you updated with new launches?"
-        body = """Dear Sir/Mam,
+        subject = "Would You Like to Keep Receiving Updates?"
+        body = """Hi,
 
-If now isn’t the right time, that’s absolutely fine — I can keep you updated on:
+If now isn’t the right time, no problem.  
+We can still keep you updated on:
+* New product launches
+* Market insights
+* Special offers
 
-* New launches in Weight Loss & Herbal ranges
-* Market-specific opportunities
-* Special offers for distributors
+👉 Should we continue sending updates?
 
-👉 Would you like me to keep sending updates?
-
-Thank you for considering us, and I look forward to collaborating in the future.
-
-Warm regards,
-Rahul Singh
-Digimed Exxim
-📞 +91 9158001207 (WhatsApp/Telegram/Signal available)"""
+Thank you,
+The Demo Team
+"""
 
     return subject, body
 
@@ -150,11 +134,11 @@ def send_email(to_addresses, subject, body):
     try:
         msg = MIMEMultipart()
         msg["From"] = EMAIL_ADDRESS
-        msg["To"] = ", ".join(to_addresses)   # 👈 All in "To"
+        msg["To"] = ", ".join(to_addresses)   # All in "To"
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "plain"))
 
-        recipients = to_addresses  # Only To, no CC
+        recipients = to_addresses
 
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
@@ -167,7 +151,7 @@ def send_email(to_addresses, subject, body):
         return False
 
 # -----------------------
-# 4. Main Logic — Strict Sequential Email Schedule
+# 4. Main Logic — Sequential Schedule
 # -----------------------
 def run_email_schedule():
     if not os.path.exists(EXCEL_FILE):
@@ -188,6 +172,7 @@ def run_email_schedule():
             ws.cell(row=1, column=len(headers) + 1, value=col)
             headers.append(col)
 
+    # Format: (index, column, threshold_days, template_day)
     email_schedule = [
         (1, "Email 1 Sent", 1, 1),
         (2, "Email 2 Sent", 4, 4),
@@ -235,14 +220,14 @@ def run_email_schedule():
                 col_index = headers.index(col_name)
                 sent_status = row[col_index].value
 
-                # ✅ STRICT rule: only send if previous email was sent
+                # Only send if previous was sent
                 if idx > 1:
                     prev_status = row[headers.index(f"Email {idx-1} Sent")].value
                     if not prev_status or str(prev_status).strip().lower() != "sent":
-                        break  # stop, because previous wasn't sent
+                        break
 
                 if sent_status and str(sent_status).strip().lower() == "sent":
-                    continue  # already sent
+                    continue
 
                 if days_since >= threshold:
                     subject, body = get_email_template(template_day)
@@ -251,7 +236,7 @@ def run_email_schedule():
                         ws.cell(row=i, column=col_index + 1, value="Sent")
                         emails_sent_today += 1
 
-                        # 🌟 Randomized Delay (12–18 mins between each email)
+                        # Randomized Delay (12–18 minutes between emails)
                         if emails_sent_today < MAX_EMAILS_PER_DAY:
                             delay = random.randint(720, 1080)
                             print(f"⏳ Waiting {delay//60} minutes before next email...")
@@ -270,4 +255,3 @@ def run_email_schedule():
 # -----------------------
 if __name__ == "__main__":
     run_email_schedule()
-
