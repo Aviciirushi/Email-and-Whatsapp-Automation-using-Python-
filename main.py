@@ -8,17 +8,25 @@ from datetime import datetime
 # ----------------------------
 # 1. Credentials and Settings
 # ----------------------------
-EMAIL = "digimedexxim@gmail.com"
-PASSWORD = "bbdt pwfs hqok wflp"
+# 👉 Replace with your own Gmail + App Password
+EMAIL = "your_email@gmail.com"
+PASSWORD = "your_app_password"
 IMAP_SERVER = "imap.gmail.com"
+
+# Example: fetching only IndiaMART leads (you can change sender/keyword)
 SEARCH_KEYWORD = '(FROM "buyleads@indiamart.com")'
+
+# Output Excel file where leads are saved
 OUTPUT_XLSX = "indiamart_leads.xlsx"
 
 # ----------------------------
 # 2. Excel Initialization
 # ----------------------------
 HEADERS = [
-    "Date", "Name", "Phone","WhatsApp 1 Sent", "WhatsApp 2 Sent", "WhatsApp 3 Sent", "WhatsApp 4 Sent", "WhatsApp 5 Sent"
+    "Date", "Name", "Phone", "Email",
+    "WhatsApp 1 Sent", "WhatsApp 2 Sent",
+    "WhatsApp 3 Sent", "WhatsApp 4 Sent",
+    "WhatsApp 5 Sent"
 ]
 
 if not os.path.exists(OUTPUT_XLSX):
@@ -31,9 +39,11 @@ if not os.path.exists(OUTPUT_XLSX):
 # 3. Utility Functions
 # ----------------------------
 def clean_text(text):
+    """Clean up line breaks from raw email text."""
     return re.sub(r'[\r\n]+', '\n', text).strip()
 
 def filter_irrelevant_lines(body):
+    """Remove footer, unsubscribe links, and irrelevant content from email body."""
     skip_patterns = [
         r"Phone ✓ Email ✓",
         r"Email ✓",
@@ -48,9 +58,13 @@ def filter_irrelevant_lines(body):
         r"Email: buyleads@indiamart.com"
     ]
     lines = body.split('\n')
-    return '\n'.join(line for line in lines if not any(re.search(pat, line.strip()) for pat in skip_patterns))
+    return '\n'.join(
+        line for line in lines
+        if not any(re.search(pat, line.strip()) for pat in skip_patterns)
+    )
 
 def extract_lead_info(body):
+    """Extracts name, phone, and email from the filtered email body."""
     body = filter_irrelevant_lines(body)
     lines = body.split('\n')
 
@@ -59,7 +73,7 @@ def extract_lead_info(body):
     for line in lines:
         line = line.strip()
 
-        # Get name
+        # Extract name (basic pattern)
         if not name and re.match(r'^[A-Za-z ]{3,}$', line):
             name = line
 
@@ -79,6 +93,7 @@ def extract_lead_info(body):
     return name, phone, email_addr
 
 def deduplicate_rows(rows):
+    """Remove duplicate leads based on (Name + Email)."""
     seen = set()
     deduped = []
     for row in reversed(rows):
@@ -93,6 +108,7 @@ def deduplicate_rows(rows):
 # 4. Fetch Leads with Pagination
 # ----------------------------
 def fetch_leads():
+    """Connects to Gmail, fetches leads, and saves them to Excel."""
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
     mail.login(EMAIL, PASSWORD)
     mail.select("inbox")
@@ -117,7 +133,7 @@ def fetch_leads():
     )
 
     new_rows = []
-    BATCH_SIZE = 50  # process in chunks to avoid Gmail timeout
+    BATCH_SIZE = 50  # Process in chunks to avoid Gmail timeout
 
     for start in range(0, total_found, BATCH_SIZE):
         batch_ids = mail_ids[start:start + BATCH_SIZE]
@@ -155,6 +171,7 @@ def fetch_leads():
 
         print(f"✅ Processed {min(start + BATCH_SIZE, total_found)} / {total_found} leads so far...")
 
+    # Merge and deduplicate
     all_rows = existing_rows + new_rows
     deduped_rows = deduplicate_rows(all_rows)
 
