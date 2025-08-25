@@ -9,15 +9,21 @@ import urllib.parse
 import time
 import random
 
-# ==============================
-# Load Excel
-# ==============================
-excel_path = "E:\\IndiaMART_Lead_Automation\\indiamart_leads.xlsx"
-df = pd.read_excel(excel_path)
+# -----------------------------
+# 1. File Paths
+# -----------------------------
+# 👉 Change to your Excel leads file + ChromeDriver path
+EXCEL_PATH = "path/to/indiamart_leads.xlsx"
+CHROMEDRIVER_PATH = "path/to/chromedriver.exe"
 
-# ==============================
-# Message Templates
-# ==============================
+# -----------------------------
+# 2. Load Excel Leads
+# -----------------------------
+df = pd.read_excel(EXCEL_PATH)
+
+# -----------------------------
+# 3. Message Templates
+# -----------------------------
 messages = {
     1: """Hello Sir/Mam, I hope you’re doing well.  
 It was great connecting with you earlier about our pharmaceutical exports. At *Digimed Exxim*, we specialize in delivering high-quality, reliable products that meet international standards, ensuring your sourcing process is smooth and hassle-free.  
@@ -44,19 +50,22 @@ Looking forward to your response and wishing you ongoing success!
 """
 }
 
-# ==============================
-# Setup Selenium
-# ==============================
-driver = webdriver.Chrome(service=Service("E:\\IndiaMART_Lead_Automation\\driver\\chromedriver.exe"))
+# -----------------------------
+# 4. Setup Selenium
+# -----------------------------
+driver = webdriver.Chrome(service=Service(CHROMEDRIVER_PATH))
 driver.get("https://web.whatsapp.com/")
 
-print("📱 Please scan the QR code to log in...")
-input("✅ Press Enter after WhatsApp Web is loaded...")
+print("📱 Please scan the QR code in WhatsApp Web...")
+input("✅ Press Enter once you are logged in...")
 
-# ==============================
-# Helper: Check if number is on WhatsApp
-# ==============================
-def is_whatsapp_number(phone_number):
+# -----------------------------
+# 5. Helper Functions
+# -----------------------------
+def is_whatsapp_number(phone_number: str) -> bool:
+    """
+    Check if the given phone number is registered on WhatsApp.
+    """
     driver.get(f"https://web.whatsapp.com/send?phone={phone_number}&text&app_absent=0")
     try:
         WebDriverWait(driver, 6).until(
@@ -66,10 +75,10 @@ def is_whatsapp_number(phone_number):
     except:
         return False
 
-# ==============================
-# Helper: Send WhatsApp message
-# ==============================
-def send_message(phone_number, message):
+def send_message(phone_number: str, message: str) -> bool:
+    """
+    Send a WhatsApp message to the given phone number.
+    """
     encoded_message = urllib.parse.quote(message)
     driver.get(f"https://web.whatsapp.com/send?phone={phone_number}&text={encoded_message}")
 
@@ -84,9 +93,9 @@ def send_message(phone_number, message):
         print(f"❌ Failed to send to {phone_number}: {e}")
         return False
 
-# ==============================
-# Process up to 20 successful messages
-# ==============================
+# -----------------------------
+# 6. Process Leads (max 20/day)
+# -----------------------------
 sent_count = 0
 today = datetime.today()
 
@@ -98,16 +107,17 @@ for idx, row in df.iterrows():
     if pd.isna(phone):
         continue
 
+    # Clean number format
     phone = phone.replace("+", "").replace("-", "").replace(" ", "")
     if len(phone) < 8:
         continue
 
-    # ⛔️ Skip permanently if any previous attempt was "Skipped"
+    # Skip permanently if previously marked Skipped
     if any(str(row.get(col)) == "Skipped" for col in ["WhatsApp 1 Sent", "WhatsApp 2 Sent", "WhatsApp 3 Sent"]):
         print(f"🚫 {phone} permanently marked as Skipped, ignoring...")
         continue
 
-    # Parse date safely
+    # Safe date parsing
     lead_date = pd.to_datetime(row["Date"], dayfirst=True, errors="coerce")
     if pd.isna(lead_date):
         continue
@@ -130,22 +140,23 @@ for idx, row in df.iterrows():
             df.at[idx, f"WhatsApp {msg_number} Sent"] = "Skipped"
             continue
 
-        # If available, send message
+        # If valid, send message
         print(f"📲 Sending WhatsApp {msg_number} to {phone}...")
         if send_message(phone, messages[msg_number]):
             df.at[idx, f"WhatsApp {msg_number} Sent"] = today.strftime("%Y-%m-%d")
             print(f"✅ WhatsApp {msg_number} sent to {phone}")
             sent_count += 1
 
-            if sent_count < 20:  # don’t wait after last
-                wait_time = random.randint(1800, 7200)  # 30–120 min
+            # Delay between messages to avoid spam
+            if sent_count < 20:
+                wait_time = random.randint(1800, 7200)  # 30–120 minutes
                 print(f"⏳ Waiting {wait_time//60} min before next lead...")
                 time.sleep(wait_time)
 
-# ==============================
-# Save Excel
-# ==============================
-df.to_excel(excel_path, index=False)
+# -----------------------------
+# 7. Save Excel
+# -----------------------------
+df.to_excel(EXCEL_PATH, index=False)
 print("💾 Excel updated with sent/skipped status!")
 
 driver.quit()
